@@ -1,0 +1,11 @@
+
+/.vscode
+# Per-host hardware configs are committed under hosts/<name>/hardware-configuration.nix.
+# This rule still hides any stray file generated at the repo root by `nixos-generate-config`.
+/hardware-configuration.nix
+.claude/settings.local.json
+.result
+
+# OpenTofu working dir for the `dns` runner (provider cache + generated
+# config.tf.json). State is remote (R2); nothing here is source of truth.
+/dns/.tofu/

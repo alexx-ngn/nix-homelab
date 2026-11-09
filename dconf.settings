@@ -1,0 +1,173 @@
+[org/gnome/Console]
+font-scale=1.5000000000000004
+last-window-size=(1132, 792)
+
+[org/gnome/Geary]
+migrated-config=true
+
+[org/gnome/calendar]
+active-view='month'
+window-maximized=true
+window-size=(768, 600)
+
+[org/gnome/control-center]
+last-panel='display'
+window-state=(980, 640, false)
+
+[org/gnome/desktop/app-folders]
+folder-children=['Utilities', 'YaST', 'Pardus']
+
+[org/gnome/desktop/app-folders/folders/Pardus]
+categories=['X-Pardus-Apps']
+name='X-Pardus-Apps.directory'
+translate=true
+
+[org/gnome/desktop/app-folders/folders/Utilities]
+apps=['org.freedesktop.GnomeAbrt.desktop', 'nm-connection-editor.desktop', 'org.gnome.baobab.desktop', 'org.gnome.Connections.desktop', 'org.gnome.DejaDup.desktop', 'org.gnome.DiskUtility.desktop', 'org.gnome.Evince.desktop', 'org.gnome.FileRoller.desktop', 'org.gnome.font-viewer.desktop', 'org.gnome.Loupe.desktop', 'org.gnome.seahorse.Application.desktop', 'org.gnome.tweaks.desktop', 'org.gnome.Usage.desktop']
+categories=['X-GNOME-Utilities']
+name='X-GNOME-Utilities.directory'
+translate=true
+
+[org/gnome/desktop/app-folders/folders/YaST]
+categories=['X-SuSE-YaST']
+name='suse-yast.directory'
+translate=true
+
+[org/gnome/desktop/background]
+color-shading-type='solid'
+picture-options='zoom'
+picture-uri='file:///run/current-system/sw/share/backgrounds/gnome/adwaita-l.jpg'
+picture-uri-dark='file:///run/current-system/sw/share/backgrounds/gnome/adwaita-d.jpg'
+primary-color='#3071AE'
+secondary-color='#000000'
+
+[org/gnome/desktop/input-sources]
+sources=[('xkb', 'us')]
+xkb-options=['terminate:ctrl_alt_bksp']
+
+[org/gnome/desktop/interface]
+color-scheme='prefer-dark'
+cursor-theme='WhiteSur-cursors'
+font-antialiasing='grayscale'
+font-hinting='slight'
+gtk-theme='WhiteSur-Dark'
+icon-theme='WhiteSur-dark'
+
+[org/gnome/desktop/notifications]
+application-children=['org-gnome-texteditor', 'spotify', 'vencorddesktop', 'org-gnome-console', 'org-gnome-settings']
+
+[org/gnome/desktop/notifications/application/org-gnome-console]
+application-id='org.gnome.Console.desktop'
+
+[org/gnome/desktop/notifications/application/org-gnome-settings]
+application-id='org.gnome.Settings.desktop'
+
+[org/gnome/desktop/notifications/application/org-gnome-texteditor]
+application-id='org.gnome.TextEditor.desktop'
+
+[org/gnome/desktop/notifications/application/spotify]
+application-id='spotify.desktop'
+
+[org/gnome/desktop/notifications/application/vencorddesktop]
+application-id='vencorddesktop.desktop'
+
+[org/gnome/desktop/privacy]
+old-files-age=uint32 30
+recent-files-max-age=-1
+
+[org/gnome/desktop/screensaver]
+color-shading-type='solid'
+picture-options='zoom'
+picture-uri='file:///run/current-system/sw/share/backgrounds/gnome/adwaita-l.jpg'
+primary-color='#3071AE'
+secondary-color='#000000'
+
+[org/gnome/desktop/session]
+idle-delay=uint32 300
+
+[org/gnome/desktop/wm/keybindings]
+close=['<Super>q']
+
+[org/gnome/desktop/wm/preferences]
+button-layout=':minimize,maximize,close'
+
+[org/gnome/epiphany]
+ask-for-default=false
+default-search-engine='DuckDuckGo'
+search-engine-providers=[{'url': <'https://www.bing.com/search?q=%s'>, 'bang': <'!b'>, 'name': <'Bing'>}, {'url': <'https://duckduckgo.com/?q=%s&t=epiphany&kd=-1'>, 'bang': <'!ddg'>, 'name': <'DuckDuckGo'>}, {'url': <'https://www.google.com/search?q=%s'>, 'bang': <'!g'>, 'name': <'Google'>}]
+
+[org/gnome/epiphany/state]
+is-maximized=false
+window-size=(1024, 768)
+
+[org/gnome/evolution-data-server]
+migrated=true
+
+[org/gnome/nautilus/preferences]
+default-folder-viewer='list-view'
+migrated-gtk-settings=true
+search-filter-time-type='last_modified'
+
+[org/gnome/nautilus/window-state]
+initial-size=(890, 550)
+maximized=false
+
+[org/gnome/portal/filechooser/chromium-browser]
+last-folder-path='/home/alex/Downloads/Tokyo Ghoul Series (digital) (aKraa)/Tokyo Ghoul - re (digital) (aKraa)/epub'
+
+[org/gnome/settings-daemon/plugins/color]
+night-light-enabled=true
+night-light-schedule-automatic=true
+night-light-temperature='uint32 3333'
+
+[org/gnome/shell]
+command-history=['r']
+disable-user-extensions=false
+disabled-extensions=@as []
+enabled-extensions=[blur-my-shell@aunetx', 'Ip-Finder@LinxGem33', 'dash-to-dock@michele_g', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'dash-to-dock@micxgx.gmail.com']
+favorite-apps=['chromium-browser.desktop', 'com.mitchellh.ghostty.desktop', 'org.gnome.Nautilus.desktop', 'code.desktop', 'virt-manager.desktop', 'spotify.desktop', 'vesktop.desktop']
+welcome-dialog-last-shown-version='47.2'
+
+[org/gnome/shell/extensions/blur-my-shell]
+brightness=0.75
+noise-amount=0
+
+[org/gnome/shell/extensions/user-theme]
+name='WhiteSur-Dark'
+
+[org/gnome/shell/world-clocks]
+locations=@av []
+
+[org/gnome/system/location]
+enabled=true
+
+[org/gnome/tweaks]
+show-extensions-notice=false
+
+[org/gtk/gtk4/settings/file-chooser]
+date-format='regular'
+location-mode='path-bar'
+show-hidden=false
+show-size-column=true
+show-type-column=true
+sidebar-width=140
+sort-column='name'
+sort-directories-first=true
+sort-order='descending'
+type-format='category'
+view-type='list'
+window-size=(1214, 372)
+
+[org/gtk/settings/file-chooser]
+date-format='regular'
+location-mode='path-bar'
+show-hidden=false
+show-size-column=true
+show-type-column=true
+sidebar-width=183
+sort-column='name'
+sort-directories-first=false
+sort-order='ascending'
+type-format='category'
+window-position=(994, 237)
+window-size=(1203, 902)

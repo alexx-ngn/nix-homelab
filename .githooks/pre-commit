@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Format staged files with the flake formatter (nixfmt-tree/treefmt) before
+# committing, then re-stage anything that changed. Keeps commits in sync with
+# the CI `nix fmt -- --ci` check.
+set -euo pipefail
+
+# Staged files (added/copied/modified), NUL-delimited to survive odd names.
+mapfile -d '' -t files < <(git diff --cached --name-only --diff-filter=ACM -z)
+[ "${#files[@]}" -eq 0 ] && exit 0
+
+# treefmt ignores files it has no formatter for, so passing all staged paths is safe.
+nix fmt -- "${files[@]}"
+
+git add -- "${files[@]}"

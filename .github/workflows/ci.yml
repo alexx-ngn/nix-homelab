@@ -1,0 +1,119 @@
+name: CI
+
+# Public snapshot: the real deploys run from the private repo. Triggers are
+# manual-only here so pushes to this repo never try to reach the hosts.
+on:
+  workflow_dispatch:
+
+# Cancel superseded PR runs, but never a main-branch run: cancelling one
+# mid-deploy leaves a host on the old generation until the next push (the
+# per-host deploy groups below can't protect against a workflow-level cancel).
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      # Vendor-neutral installer. DeterminateSystems/nix-installer-action now
+      # installs Determinate Nix by default and dropped upstream-Nix support
+      # at the start of 2026, so we use Cachix's installer instead.
+      - uses: cachix/install-nix-action@08dcb3a5e62fa31e2da3d490afc4176ef55ecd72 # v30
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            accept-flake-config = true
+
+      - name: Check formatting
+        run: nix fmt -- --ci
+
+  # One job per host: build, then (on main pushes) deploy from the same
+  # runner. Hosts build in parallel, and the deploy reuses the store the
+  # build just populated — no second runner spin-up, no re-eval, and no
+  # round-trip of the closure through Cachix.
+  #
+  # `nix flake check` is intentionally not run yet: alexpc / alexlaptop
+  # still import /etc/nixos/hardware-configuration.nix and can't be
+  # evaluated purely in CI. Once they're migrated to facter, a check job
+  # can cover all hosts at once.
+  host:
+    name: build & deploy ${{ matrix.host }}
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        host: [alexserver, alexpad]
+    # Serialize deploys per host across runs; GitHub cancels an older *queued*
+    # run in the same group but never a running one (cancel-in-progress: false).
+    concurrency:
+      group: deploy-${{ matrix.host }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - uses: cachix/install-nix-action@08dcb3a5e62fa31e2da3d490afc4176ef55ecd72 # v30
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            accept-flake-config = true
+
+      # Free up disk on hosted runners; NixOS closures get big. The docker
+      # image prune was dropped — it cost ~a minute and these removals free
+      # plenty (~25 GB). Restore it if a lock-bump build ever fills the disk.
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+                      /opt/hostedtoolcache/CodeQL
+
+      - name: Set up Cachix (pull only)
+        if: github.event_name == 'pull_request'
+        uses: cachix/cachix-action@ad2ddac53f961de1989924296a1f236fcfbaa4fc # v15
+        with:
+          name: alex-infra
+          skipPush: true
+
+      - name: Set up Cachix (push)
+        if: github.event_name == 'push'
+        uses: cachix/cachix-action@ad2ddac53f961de1989924296a1f236fcfbaa4fc # v15
+        with:
+          name: alex-infra
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+
+      - name: Build ${{ matrix.host }}
+        run: |
+          nix build --print-build-logs --no-link \
+            '.#deploy.nodes.${{ matrix.host }}.profiles.system.path'
+
+      # Join the tailnet as an ephemeral node so we can reach the target
+      # over MagicDNS. Requires an OAuth client with `auth_keys` scope and
+      # `tag:ci` permitted to <host>:22 in the tailnet ACL.
+      - uses: tailscale/github-action@6cae46e2d796f265265cfcf628b72a32b4d7cade # v3
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
+      - uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+
+      - name: Trust ${{ matrix.host }} host key
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ matrix.host }} >> ~/.ssh/known_hosts
+
+      # --skip-checks: deploy-rs would otherwise run `nix flake check`, which
+      # walks every nixosConfiguration. alexpc/alexlaptop still import
+      # /etc/nixos/hardware-configuration.nix and can't evaluate purely on a
+      # runner. Drop this flag once those hosts are migrated to facter.
+      - name: Deploy ${{ matrix.host }}
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: nix run .#deploy-rs -- .#${{ matrix.host }} --skip-checks
